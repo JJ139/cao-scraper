@@ -25,8 +25,10 @@ public class BootstrapData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        for (int i = 9000; i < 9050; i++) {
 
+        System.out.println("Loading data...");
+        for (int i = 6787; i < 7000; i++) {
+            System.out.println(i);
             // get cao data dto
             CaoDataDto dto = caoScrapingService.scrapeCaoByObjectId(String.valueOf(i));
 
@@ -38,5 +40,7 @@ public class BootstrapData implements CommandLineRunner {
                 System.out.println(caoDataRepository.save(caoData));
             }
         }
+        System.out.println("Completed Data Loading.");
+
     }
 }
