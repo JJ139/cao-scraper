@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,79 +16,104 @@ import java.time.format.DateTimeFormatter;
 public class CaoScrapingService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private final String ID_ONGELDIG = "Geen Rechten";
     private final String URL = "https://www.uitvoeringarbeidsvoorwaardenwetgeving.nl/mozard/!suite92.scherm1007?mObj=";
 
     public CaoDataDto scrapeCaoByObjectId(String objectId) {
 
         String objectUrl = URL + objectId;
-        System.out.println(objectUrl);
+        //System.out.println(objectUrl);
         CaoDataDto dto = new CaoDataDto();
-        dto.setObjectId(objectId);
 
         try {
             // retrieving the desired web page
+            SSL.trustAllHttpsCertificates();
+            HttpsURLConnection.setDefaultHostnameVerifier(SSL.hv);
             Document webPage = Jsoup.connect(objectUrl).get();
 
-            // get web page
-            Element tbody = webPage.getElementById("tabel1");
+            // check if object id is valid
+            String header = webPage.getElementsByTag("h1").first().text();
 
-            // get data rows
-            assert tbody != null;
-            Elements rows = tbody.children();
+            if (ID_ONGELDIG.equals(header)) {
+                return null;
+            }
+            else {
 
-            for (Element row : rows) {
+                dto.setObjectId(objectId);
 
-                String key = null;
-                String value = null;
+                // get table with cao data
+                Element tbody = webPage
+                        .getElementById("tabel1");
 
-                try {
-                    key = row.getElementsByClass("prompttekst").first().val();
-                    value = row.
-                            getElementsByClass("aandachttekst")
-                            .first()
-                            .getElementsByClass("aandachttekst__tekst")
-                            .first()
-                            .getElementsByTag("span")
-                            .first()
-                            .val();
-                } catch (NullPointerException e) {
-                    System.out.println("element not found");
-                }
+                // get data rows
+                assert tbody != null;
+                Elements rows = tbody.children();
+                //System.out.println("Number of rows: " + rows.size());
 
-                if (key != null && value != null) {
-                    switch (key) {
-                        case "Naam":
-                            dto.setNaam(value);
-                            break;
-                        case "Registratie":
-                            dto.setRegistratie(value);
-                            break;
-                        case "CAO":
-                            dto.setCao(value);
-                            break;
-                        case "Ingangsdatum":
-                            dto.setIngangsdatum(LocalDate.parse(value, formatter));
-                            break;
-                        case "Expiratiedatum":
-                            dto.setExpiratiedatum(LocalDate.parse(value, formatter));
-                            break;
-                        case "Soort cao":
-                            dto.setSoort(value);
-                            break;
-                        case "Type cao":
-                            dto.setType(value);
-                            break;
-                        case "SBI-code":
-                            dto.setSbi(value);
-                            break;
-                        case "Datum formele Kennisgeving van Ontvangst":
-                            dto.setKvoDatum(LocalDate.parse(value, formatter));
-                            break;
+                for (Element row : rows) {
+                    //System.out.println("row: " + row);
+
+                    String key = null;
+                    String value = null;
+
+                    try {
+                        key = row
+                                .getElementsByClass("col-md-12")
+                                .first()
+                                .getElementsByClass("prompttekst")
+                                .first().text();
+                        value = row
+                                .getElementsByClass("col-md-12")
+                                .first()
+                                .getElementsByClass("aandachttekst")
+                                .first()
+                                .getElementsByClass("aandachttekst__tekst")
+                                .first()
+                                .getElementsByTag("span")
+                                .first()
+                                .text();
+                        //System.out.println("Key: " + key);
+                        //System.out.println("Value: " + value);
+                    } catch (NullPointerException e) {
+                        System.out.println("element not found");
+                    }
+
+                    //System.out.println("Key 1: " + key);
+                    //System.out.println("Value 1: " + value);
+                    if (key != null && value != null) {
+                        switch (key) {
+                            case "Naam":
+                                dto.setNaam(value);
+                                break;
+                            case "Registratie":
+                                dto.setRegistratie(value);
+                                break;
+                            case "CAO":
+                                dto.setCao(value);
+                                break;
+                            case "Ingangsdatum":
+                                dto.setIngangsdatum(LocalDate.parse(value, formatter));
+                                break;
+                            case "Expiratiedatum":
+                                dto.setExpiratiedatum(LocalDate.parse(value, formatter));
+                                break;
+                            case "Soort cao":
+                                dto.setSoort(value);
+                                break;
+                            case "Type cao":
+                                dto.setType(value);
+                                break;
+                            case "SBI-code":
+                                dto.setSbi(value);
+                                break;
+                            case "Datum formele Kennisgeving van Ontvangst":
+                                dto.setKvoDatum(LocalDate.parse(value, formatter));
+                                break;
+                        }
                     }
                 }
             }
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dto;

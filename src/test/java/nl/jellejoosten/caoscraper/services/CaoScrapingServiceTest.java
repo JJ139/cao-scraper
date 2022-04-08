@@ -14,8 +14,15 @@ class CaoScrapingServiceTest {
     CaoScrapingService caoScrapingService;
 
     @Test
-    void scrapeCaoByObjectId() {
+    void scrapeCaoByObjectIdSucces() {
         CaoDataDto dto = caoScrapingService.scrapeCaoByObjectId("14271");
+        assertEquals("611", dto.getSbi());
         System.out.println(dto);
+    }
+
+    @Test
+    void scrapeCaoByObjectIdFail() {
+        CaoDataDto dto = caoScrapingService.scrapeCaoByObjectId("1");
+        assertNull(dto);
     }
 }
