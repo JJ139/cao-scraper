@@ -83,31 +83,49 @@ public class CaoScrapingService {
                     if (key != null && value != null) {
                         switch (key) {
                             case "Naam":
-                                dto.setNaam(value);
+                                if (dto.getNaam() == null) {
+                                    dto.setNaam(value) ;
+                                }
                                 break;
                             case "Registratie":
-                                dto.setRegistratie(value);
+                                if (dto.getRegistratie() == null) {
+                                    dto.setRegistratie(value);
+                                }
                                 break;
                             case "CAO":
-                                dto.setCao(value);
+                                if (dto.getCao() == null) {
+                                    dto.setCao(value);
+                                }
                                 break;
                             case "Ingangsdatum":
-                                dto.setIngangsdatum(LocalDate.parse(value, formatter));
+                                if (dto.getIngangsdatum() == null) {
+                                    dto.setIngangsdatum(LocalDate.parse(value, formatter));
+                                }
                                 break;
                             case "Expiratiedatum":
-                                dto.setExpiratiedatum(LocalDate.parse(value, formatter));
+                                if (dto.getExpiratiedatum() == null) {
+                                    dto.setExpiratiedatum(LocalDate.parse(value, formatter));
+                                }
                                 break;
                             case "Soort cao":
-                                dto.setSoort(value);
+                                if (dto.getSoort() == null) {
+                                    dto.setSoort(value);
+                                }
                                 break;
                             case "Type cao":
-                                dto.setType(value);
+                                if (dto.getType() == null) {
+                                    dto.setType(value);
+                                }
                                 break;
                             case "SBI-code":
-                                dto.setSbi(value);
+                                if (dto.getSbi() == null) {
+                                    dto.setSbi(value);
+                                }
                                 break;
                             case "Datum formele Kennisgeving van Ontvangst":
-                                dto.setKvoDatum(LocalDate.parse(value, formatter));
+                                if (dto.getKvoDatum() == null) {
+                                    dto.setKvoDatum(LocalDate.parse(value, formatter));
+                                }
                                 break;
                         }
                     }

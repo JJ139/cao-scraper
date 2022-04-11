@@ -1,0 +1,10 @@
+DROP DATABASE IF EXISTS caolistdb;
+DROP USER IF EXISTS `caolistadmin`@`%`;
+DROP USER IF EXISTS `caolistuser`@`%`;
+CREATE DATABASE IF NOT EXISTS caolistdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS `caolistadmin`@`%` IDENTIFIED WITH mysql_native_password BY 'password';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, REFERENCES, INDEX, ALTER, EXECUTE, CREATE VIEW, SHOW VIEW,
+CREATE ROUTINE, ALTER ROUTINE, EVENT, TRIGGER ON `caolistdb`.* TO `caolistadmin`@`%`;
+CREATE USER IF NOT EXISTS `caolistuser`@`%` IDENTIFIED WITH mysql_native_password BY 'password';
+GRANT SELECT, INSERT, UPDATE, DELETE, SHOW VIEW ON `caolistdb`.* TO `caolistuser`@`%`;
+FLUSH PRIVILEGES;
